@@ -1,9 +1,3 @@
-
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "./db";
-import { users, sessions, accounts, verifications } from "./db/schema";
-
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -14,9 +8,11 @@ export const auth = betterAuth({
             verification: verifications
         },
     }),
-    trustedOrigins: ["http://localhost:5173"],
+    // AMAN: Izinkan domain aplikasi Anda sendiri
+    trustedOrigins: [
+        process.env.BETTER_AUTH_URL || "https://tilawat-tracker-production.up.railway.app", // Ini akan mengambil URL dari Railway
+    ],
     emailAndPassword: {
         enabled: true,
     },
-    // Add social providers here if needed
 });
