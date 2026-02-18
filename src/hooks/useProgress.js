@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { TOTAL_JUZ, juzData, getTodayString } from '../data/quranData';
+import { authClient } from '../lib/auth-client';
 
 const STORAGE_KEY = 'tilawat_progress';
 
@@ -53,32 +54,137 @@ function saveProgress(progress) {
 
 export function useProgress() {
     const [progress, setProgress] = useState(loadProgress);
+    const { data: session } = authClient.useSession();
 
-    // Persist on change
+    // Helper for API calls
+    const apiCall = useCallback(async (endpoint, method = 'GET', body = null) => {
+        if (!session) return null;
+        try {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const res = await fetch(`/api${endpoint}`, options);
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+            return await res.json();
+        } catch (e) {
+            console.error('Sync error:', e);
+            return null;
+        }
+    }, [session]);
+
+    // Initial Sync with Backend
+    useEffect(() => {
+        if (!session) return;
+
+        const fetchData = async () => {
+            try {
+                const [goals, stats, history] = await Promise.all([
+                    apiCall('/goals'),
+                    apiCall('/progress/stats'),
+                    apiCall('/reading/history')
+                ]);
+
+                setProgress(prev => {
+                    const next = { ...prev };
+
+                    if (goals) {
+                        next.targetKhatam = goals.targetKhatam || prev.targetKhatam;
+                        next.targetDays = goals.targetDays || prev.targetDays;
+                        next.distributionMode = goals.distributionMode || prev.distributionMode;
+                        next.startDate = goals.startDate || prev.startDate;
+                        if (goals.startDate) next.onboardingComplete = true;
+                    }
+
+                    if (stats) {
+                        next.currentStreak = stats.currentStreak ?? prev.currentStreak;
+                        next.longestStreak = stats.longestStreak ?? prev.longestStreak;
+                        next.totalPagesRead = stats.totalPagesRead ?? prev.totalPagesRead;
+                        next.completedJuz = stats.completedJuzCount ?? prev.completedJuz;
+                        next.lastReadDate = stats.lastReadDate ? stats.lastReadDate.split('T')[0] : prev.lastReadDate;
+                        next.fajrReadCount = stats.fajrReadCount ?? prev.fajrReadCount;
+                    }
+
+                    if (history && Array.isArray(history)) {
+                        const newLogs = {};
+                        const juzStatus = Array(TOTAL_JUZ).fill('not_started');
+
+                        history.forEach(log => {
+                            const dateStr = log.date.split('T')[0];
+                            newLogs[dateStr] = {
+                                pagesRead: log.pagesRead,
+                                juzCompleted: log.juzCompleted || [],
+                                timestamp: log.readAt
+                            };
+
+                            // Rehydrate completed juz
+                            if (log.juzCompleted) {
+                                log.juzCompleted.forEach(j => {
+                                    if (j > 0 && j <= TOTAL_JUZ) juzStatus[j - 1] = 'completed';
+                                });
+                            }
+                        });
+
+                        next.dailyLogs = { ...prev.dailyLogs, ...newLogs };
+
+                        // Merge juz completion status
+                        // Note: Backend gives history, so we trust backend for completed ones
+                        // But we keep local 'completed' if not in backend? Ideally strict sync.
+                        // For now strict sync on found logs:
+                        next.juzStatus = next.juzStatus.map((s, i) =>
+                            juzStatus[i] === 'completed' ? 'completed' : s
+                        );
+
+                        // Fix 'in_progress' pointer
+                        const nextNotStarted = next.juzStatus.findIndex(s => s === 'not_started');
+                        if (nextNotStarted >= 0 && next.juzStatus.some(s => s === 'completed')) {
+                            next.juzStatus[nextNotStarted] = 'in_progress';
+                        }
+                    }
+
+                    return next;
+                });
+            } catch (e) {
+                console.error("Failed to sync initial data", e);
+            }
+        };
+
+        fetchData();
+    }, [session, apiCall]);
+
+    // Persist on change (Local)
     useEffect(() => {
         saveProgress(progress);
     }, [progress]);
 
     // Complete onboarding with goal settings
     const completeOnboarding = useCallback((settings) => {
-        setProgress(prev => ({
-            ...prev,
+        const newSettings = {
             targetKhatam: settings.targetKhatam || 1,
             targetDays: settings.targetDays || 30,
             distributionMode: settings.distributionMode || 'per_hari',
             startDate: getTodayString(),
             onboardingComplete: true,
-        }));
-    }, []);
+        };
+
+        setProgress(prev => ({ ...prev, ...newSettings }));
+
+        // Sync
+        apiCall('/goals', 'POST', newSettings);
+    }, [apiCall]);
 
     // Log reading for today
     const logReading = useCallback((juzNumbers = [], pagesRead = 0) => {
+        const actualPagesRead = pagesRead || juzNumbers.length * 20;
+        const today = getTodayString();
+
+        // 1. Optimistic Update
         setProgress(prev => {
-            const today = getTodayString();
             const newJuzStatus = [...prev.juzStatus];
             let newCompletedJuz = prev.completedJuz;
 
-            // Mark juz as completed
             juzNumbers.forEach(juzNum => {
                 if (juzNum >= 1 && juzNum <= TOTAL_JUZ) {
                     newJuzStatus[juzNum - 1] = 'completed';
@@ -86,36 +192,29 @@ export function useProgress() {
             });
             newCompletedJuz = newJuzStatus.filter(s => s === 'completed').length;
 
-            // Mark next juz as in_progress if any
             const nextNotStarted = newJuzStatus.findIndex(s => s === 'not_started');
             if (nextNotStarted >= 0 && newCompletedJuz > 0) {
                 newJuzStatus[nextNotStarted] = 'in_progress';
             }
 
-            // Calculate streak
             let newStreak = prev.currentStreak;
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             const yesterdayStr = yesterday.toISOString().split('T')[0];
 
             if (prev.lastReadDate === today) {
-                // Already logged today, just update
                 newStreak = prev.currentStreak;
             } else if (prev.lastReadDate === yesterdayStr) {
                 newStreak = prev.currentStreak + 1;
             } else if (!prev.lastReadDate) {
                 newStreak = 1;
             } else {
-                newStreak = 1; // streak broken
+                newStreak = 1;
             }
 
-            const actualPagesRead = pagesRead || juzNumbers.length * 20;
-
-            // Check if reading before 6am (Fajr badge)
             const now = new Date();
             const isFajrTime = now.getHours() < 6;
 
-            // Daily log
             const existingLog = prev.dailyLogs[today] || { pagesRead: 0, juzCompleted: [], timestamp: null };
             const updatedLog = {
                 pagesRead: existingLog.pagesRead + actualPagesRead,
@@ -139,7 +238,15 @@ export function useProgress() {
                 activeDays: newActiveDays,
             };
         });
-    }, []);
+
+        // 2. Sync to Backend
+        apiCall('/reading/log', 'POST', {
+            date: today,
+            juzNumbers,
+            pagesRead: actualPagesRead
+        });
+
+    }, [apiCall]);
 
     // Quick complete today's target
     const quickCompleteToday = useCallback(() => {
@@ -199,12 +306,14 @@ export function useProgress() {
     // Reset all progress
     const resetProgress = useCallback(() => {
         setProgress(getDefaultProgress());
+        // TODO: Add backend reset endpoint if needed, or just clear local
     }, []);
 
     // Update settings
     const updateSettings = useCallback((settings) => {
         setProgress(prev => ({ ...prev, ...settings }));
-    }, []);
+        apiCall('/goals', 'POST', settings);
+    }, [apiCall]);
 
     return {
         progress,

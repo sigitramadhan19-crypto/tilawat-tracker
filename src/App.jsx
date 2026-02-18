@@ -11,6 +11,7 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import RequireAuth from './components/RequireAuth';
+import ReloadPrompt from './components/ReloadPrompt';
 
 export default function App() {
   const {
@@ -29,6 +30,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ReloadPrompt />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
