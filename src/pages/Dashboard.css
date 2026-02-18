@@ -1,0 +1,171 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    position: relative;
+}
+
+.dashboard-header {
+    text-align: center;
+    padding-top: var(--space-sm);
+}
+
+.dashboard-title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-greeting {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    margin-top: 2px;
+}
+
+/* Target Card */
+.target-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.target-card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.target-done-badge {
+    margin-left: auto;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--success);
+    background: rgba(34, 197, 94, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.target-surah {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.target-ayat {
+    font-size: 0.8125rem;
+    color: var(--teal);
+    font-weight: 500;
+}
+
+.target-pages {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+}
+
+.target-complete-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-align: center;
+    padding: var(--space-md) 0;
+}
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-md) var(--space-sm);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.streak-card .stat-value {
+    color: var(--warning);
+}
+
+/* Catch-up Alert */
+.catchup-alert {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: flex-start;
+    border-color: rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.catchup-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--warning);
+    margin-bottom: 2px;
+}
+
+.catchup-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Ayat Card */
+.ayat-card {
+    text-align: center;
+}
+
+.ayat-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.ayat-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.125rem;
+    line-height: 2;
+    color: var(--gold-light);
+    margin: var(--space-sm) 0;
+    direction: rtl;
+}
+
+.ayat-translation {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.ayat-source {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+    font-weight: 600;
+}

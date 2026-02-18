@@ -1,0 +1,65 @@
+.splash-screen {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.splash-icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(45, 212, 191, 0.1));
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    margin-bottom: var(--space-lg);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+}
+
+.splash-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.splash-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    margin-top: var(--space-xs);
+    font-weight: 500;
+}
+
+.splash-loader {
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    border-radius: var(--radius-full);
+    margin-top: var(--space-xl);
+    transform-origin: left;
+}
+
+.splash-bismillah {
+    position: absolute;
+    bottom: 60px;
+    font-family: var(--font-arabic);
+    font-size: 1.375rem;
+    color: rgba(212, 175, 55, 0.5);
+    z-index: 1;
+}

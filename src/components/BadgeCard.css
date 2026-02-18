@@ -1,0 +1,63 @@
+.badge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-md) var(--space-sm);
+    border-radius: var(--radius-md);
+    text-align: center;
+    min-width: 90px;
+}
+
+.badge-card.unlocked {
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.badge-card.locked {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    opacity: 0.5;
+}
+
+.badge-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.badge-card.unlocked .badge-icon-wrapper {
+    background: rgba(212, 175, 55, 0.15);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.badge-card.locked .badge-icon-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.badge-icon {
+    font-size: 1.5rem;
+}
+
+.badge-lock-icon {
+    color: var(--text-muted);
+}
+
+.badge-name {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.badge-desc {
+    font-size: 0.5625rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+}

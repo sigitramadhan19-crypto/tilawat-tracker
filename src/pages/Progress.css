@@ -1,0 +1,203 @@
+.progress-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.section-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+}
+
+/* Mushaf Grid */
+.mushaf-section {
+    padding: var(--space-md);
+}
+
+.mushaf-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+}
+
+.juz-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 1px;
+}
+
+.juz-cell.not_started {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.juz-cell.in_progress {
+    background: rgba(45, 212, 191, 0.1);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    box-shadow: 0 0 8px rgba(45, 212, 191, 0.15);
+}
+
+.juz-cell.completed {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(240, 208, 96, 0.1));
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.15);
+}
+
+.juz-number {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1;
+}
+
+.juz-cell.completed .juz-number {
+    color: var(--gold);
+}
+
+.juz-cell.in_progress .juz-number {
+    color: var(--teal);
+}
+
+.juz-check {
+    font-size: 0.6875rem;
+    color: var(--gold);
+}
+
+.juz-progress-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+/* Legend */
+.mushaf-legend {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.legend-dot.completed {
+    background: var(--gold);
+}
+
+.legend-dot.in_progress {
+    background: var(--teal);
+}
+
+.legend-dot.not_started {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Level Card */
+.level-card {
+    padding: var(--space-md);
+}
+
+.level-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.level-icon {
+    font-size: 1.5rem;
+}
+
+.level-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+.level-next {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: var(--space-xs);
+}
+
+.level-xp {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--teal);
+}
+
+.xp-bar-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    border-radius: var(--radius-full);
+}
+
+/* Badges */
+.badges-section {
+    padding: var(--space-md);
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: var(--space-sm);
+}
+
+/* Progress Stats */
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+.pstat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-md) var(--space-sm);
+    text-align: center;
+}
+
+.pstat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.pstat-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
