@@ -17,7 +17,7 @@ const distPath = path.join(rootPath, "dist");
 
 
 app.use(cors({
-    origin: process.env.BETTER_AUTH_URL || "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN || process.env.BETTER_AUTH_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -32,7 +32,7 @@ app.use("/api/auth", (req, res) => {
 });
 app.use("/api", routes);
 
-app.get("*", (req, res) => {
+app.get("/{*path}", (req, res) => {
     if (!req.path.startsWith('/api')) {
         res.sendFile(path.join(distPath, "index.html"), (err) => {
             if (err) {
@@ -40,6 +40,8 @@ app.get("*", (req, res) => {
                 res.status(500).send("Frontend dist tidak ditemukan. Cek log Railway.");
             }
         });
+    } else {
+        res.status(404).json({ error: "Endpoint not found" });
     }
 });
 
