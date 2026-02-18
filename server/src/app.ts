@@ -21,9 +21,12 @@ app.use(cors({
 
 app.use(express.json());
 
-// 2. SAJIKAN FILE FRONTEND (Folder dist)
-// Ini agar tampilan aplikasi muncul saat link dibuka
-const distPath = path.join(__dirname, "../dist");
+// 2. SAJIKAN FILE FRONTEND
+// Gunakan path.resolve agar lebih akurat menentukan lokasi folder dist
+const distPath = path.resolve(__dirname, "../../dist");
+// Catatan: Jika app.ts Anda ada di server/src, maka saat jadi JS di server/dist/src, 
+// kita butuh naik 2 tingkat (../../) untuk ketemu folder dist frontend.
+
 app.use(express.static(distPath));
 
 // Mount Better Auth handler
@@ -34,12 +37,16 @@ app.use("/api/auth", (req, res) => {
 // Mount API routes
 app.use("/api", routes);
 
-// 3. FALLBACK ROUTE: Penting agar saat refresh halaman tidak error 404
+// 3. FALLBACK ROUTE
 app.get("*", (req, res) => {
-    // Jika request bukan untuk API, berikan file index.html dari frontend
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(distPath, "index.html"));
-    }
+    // Pastikan jalur ke index.html juga benar
+    res.sendFile(path.join(distPath, "index.html"), (err) => {
+        if (err) {
+            // Jika error, bantu diagnosa lewat log Railway
+            console.error("File index.html tidak ditemukan di:", path.join(distPath, "index.html"));
+            res.status(500).send("Terjadi kesalahan pada server (Frontend path error)");
+        }
+    });
 });
 
 app.listen(port, () => {
