@@ -1,3 +1,8 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "./db"; // Pastikan path ke file koneksi DB Anda benar
+import { users, sessions, accounts, verifications } from "./db/schema"; // Pastikan path ke schema Anda benar
+
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "pg",
