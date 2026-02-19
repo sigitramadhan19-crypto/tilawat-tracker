@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 
 const rootPath = process.cwd();
-const distPath = path.join(rootPath, "dist");
+const distPath = path.join(rootPath, "../dist");
 
 
 app.use(cors({
