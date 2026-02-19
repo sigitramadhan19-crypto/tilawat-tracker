@@ -138,10 +138,18 @@ export function useProgress() {
                         );
 
                         // Fix 'in_progress' pointer
+                        // Remove all existing in_progress first
+                        next.juzStatus = next.juzStatus.map(s =>
+                            s === 'in_progress' ? 'not_started' : s
+                        );
+
                         const nextNotStarted = next.juzStatus.findIndex(s => s === 'not_started');
-                        if (nextNotStarted >= 0 && next.juzStatus.some(s => s === 'completed')) {
+
+                        if (nextNotStarted >= 0) {
                             next.juzStatus[nextNotStarted] = 'in_progress';
                         }
+
+
                     }
 
                     return next;
@@ -192,10 +200,17 @@ export function useProgress() {
             });
             newCompletedJuz = newJuzStatus.filter(s => s === 'completed').length;
 
-            const nextNotStarted = newJuzStatus.findIndex(s => s === 'not_started');
-            if (nextNotStarted >= 0 && newCompletedJuz > 0) {
-                newJuzStatus[nextNotStarted] = 'in_progress';
+            // Remove all in_progress first
+            const cleanedStatus = newJuzStatus.map(s =>
+                s === 'in_progress' ? 'not_started' : s
+            );
+
+            const nextNotStarted = cleanedStatus.findIndex(s => s === 'not_started');
+
+            if (nextNotStarted >= 0) {
+                cleanedStatus[nextNotStarted] = 'in_progress';
             }
+
 
             let newStreak = prev.currentStreak;
             const yesterday = new Date();

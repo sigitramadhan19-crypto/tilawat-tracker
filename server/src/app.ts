@@ -1,19 +1,17 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import dotenv from "dotenv/config";
 import path from "path";
 import routes from "./routes";
 import { auth } from "./auth";
 import { toNodeHandler } from "better-auth/node";
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 
 const rootPath = process.cwd();
-const distPath = path.join(__dirname, "../../../dist");
+const distPath = path.join(process.cwd(), "dist");
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN || process.env.BETTER_AUTH_URL || "http://localhost:5173",
