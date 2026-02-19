@@ -13,8 +13,7 @@ const port = process.env.PORT || 3000;
 
 
 const rootPath = process.cwd();
-const distPath = path.join(rootPath, "../dist");
-
+const distPath = path.join(__dirname, "../../../dist");
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN || process.env.BETTER_AUTH_URL || "http://localhost:5173",
